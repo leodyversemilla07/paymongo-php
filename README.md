@@ -2,7 +2,7 @@
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/leodyversemilla07/paymongo-php.svg?style=flat-square)](https://packagist.org/packages/leodyversemilla07/paymongo-php)
 [![Tests](https://github.com/leodyversemilla07/paymongo-php/actions/workflows/ci.yml/badge.svg)](https://github.com/leodyversemilla07/paymongo-php/actions/workflows/ci.yml)
-[![License](https://img.shields.io/packagist/l/leodyversemilla07/paymongo-php.svg?style=flat-square)](https://packagist.org/packages/leodyversemilla07/paymongo-php)
+[![License](https://img.shields.io/github/license/leodyversemilla07/paymongo-php.svg?style=flat-square)](LICENSE)
 [![PHP Version](https://img.shields.io/packagist/php-v/leodyversemilla07/paymongo-php.svg?style=flat-square)](https://packagist.org/packages/leodyversemilla07/paymongo-php)
 
 A comprehensive PHP SDK for integrating with the [PayMongo](https://paymongo.com) payment gateway API.
