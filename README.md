@@ -274,7 +274,7 @@ If you discover any security-related issues, please email security@example.com i
 
 ## License
 
-The MIT License (MIT). Please see [License File](LICENSE) for more information.
+MIT License. See [LICENSE](LICENSE).
 
 ## Resources
 
