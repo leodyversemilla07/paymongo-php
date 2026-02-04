@@ -16,12 +16,12 @@ class WorkflowAuthToken extends BaseEntity
 
     public function __construct(ApiResource $apiResource)
     {
-        $attributes = $apiResource->attributes;
+        $attributes = $apiResource->attributes ?? [];
 
         $this->id = $apiResource->id;
-        $this->token = $attributes['token'];
-        $this->expires_at = $attributes['expires_at'];
-        $this->livemode = $attributes['livemode'];
-        $this->created_at = $attributes['created_at'];
+        $this->token = self::requireAttr($attributes, 'token');
+        $this->expires_at = self::requireAttr($attributes, 'expires_at');
+        $this->livemode = self::requireAttr($attributes, 'livemode');
+        $this->created_at = self::requireAttr($attributes, 'created_at');
     }
 }

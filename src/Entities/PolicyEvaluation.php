@@ -18,13 +18,13 @@ class PolicyEvaluation extends BaseEntity
 
     public function __construct(ApiResource $apiResource)
     {
-        $attributes = $apiResource->attributes;
+        $attributes = $apiResource->attributes ?? [];
 
         $this->id = $apiResource->id;
-        $this->decision = $attributes['decision'];
-        $this->description = $attributes['description'];
-        $this->livemode = $attributes['livemode'];
-        $this->metadata = empty($attributes['metadata']) ? null : $attributes['metadata'];
-        $this->created_at = $attributes['created_at'];
+        $this->decision = self::requireAttr($attributes, 'decision');
+        $this->description = self::attr($attributes, 'description');
+        $this->livemode = self::requireAttr($attributes, 'livemode');
+        $this->metadata = empty(self::attr($attributes, 'metadata')) ? null : $attributes['metadata'];
+        $this->created_at = self::requireAttr($attributes, 'created_at');
     }
 }

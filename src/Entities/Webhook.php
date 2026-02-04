@@ -25,16 +25,16 @@ class Webhook extends BaseEntity
 
     public function __construct(ApiResource $apiResource)
     {
-        $attributes = $apiResource->attributes;
+        $attributes = $apiResource->attributes ?? [];
 
         $this->id = $apiResource->id;
-        $this->livemode = $attributes['livemode'];
-        $this->secret_key = $attributes['secret_key'];
-        $this->events = $attributes['events'];
-        $this->url = $attributes['url'];
-        $this->status = $attributes['status'];
-        $this->metadata = empty($attributes['metadata']) ? null : $attributes['metadata'];
-        $this->created_at = $attributes['created_at'];
-        $this->updated_at = $attributes['updated_at'];
+        $this->livemode = self::requireAttr($attributes, 'livemode');
+        $this->secret_key = self::requireAttr($attributes, 'secret_key');
+        $this->events = self::requireAttr($attributes, 'events');
+        $this->url = self::requireAttr($attributes, 'url');
+        $this->status = self::requireAttr($attributes, 'status');
+        $this->metadata = empty(self::attr($attributes, 'metadata')) ? null : $attributes['metadata'];
+        $this->created_at = self::requireAttr($attributes, 'created_at');
+        $this->updated_at = self::requireAttr($attributes, 'updated_at');
     }
 }

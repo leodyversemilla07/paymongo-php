@@ -75,7 +75,7 @@ $checkoutSession = $client->checkoutSessions->create([
     'cancel_url' => 'https://example.com/cancel',
 ]);
 
-echo $checkoutSession->checkout_url . "\n";
+echo $checkoutSession->url . "\n";
 
 // Verifying webhook signature
 try {

@@ -31,21 +31,21 @@ class CheckoutSession extends BaseEntity
 
     public function __construct(ApiResource $apiResource)
     {
-        $attributes = $apiResource->attributes;
+        $attributes = $apiResource->attributes ?? [];
 
         $this->id = $apiResource->id;
-        $this->billing = empty($attributes['billing']) ? null : new Billing(new ApiResource($attributes['billing']));
-        $this->cancel_url = $attributes['cancel_url'];
-        $this->description = $attributes['description'];
-        $this->line_items = $attributes['line_items'];
-        $this->livemode = $attributes['livemode'];
-        $this->payment_method_types = $attributes['payment_method_types'];
-        $this->reference_number = $attributes['reference_number'];
-        $this->success_url = $attributes['success_url'];
-        $this->status = $attributes['status'];
-        $this->url = $attributes['url'];
-        $this->metadata = empty($attributes['metadata']) ? null : $attributes['metadata'];
-        $this->created_at = $attributes['created_at'];
-        $this->updated_at = $attributes['updated_at'];
+        $this->billing = empty(self::attr($attributes, 'billing')) ? null : new Billing($attributes['billing']);
+        $this->cancel_url = self::attr($attributes, 'cancel_url');
+        $this->description = self::attr($attributes, 'description');
+        $this->line_items = self::requireAttr($attributes, 'line_items');
+        $this->livemode = self::requireAttr($attributes, 'livemode');
+        $this->payment_method_types = self::requireAttr($attributes, 'payment_method_types');
+        $this->reference_number = self::attr($attributes, 'reference_number');
+        $this->success_url = self::attr($attributes, 'success_url');
+        $this->status = self::requireAttr($attributes, 'status');
+        $this->url = self::attr($attributes, 'url');
+        $this->metadata = empty(self::attr($attributes, 'metadata')) ? null : $attributes['metadata'];
+        $this->created_at = self::requireAttr($attributes, 'created_at');
+        $this->updated_at = self::requireAttr($attributes, 'updated_at');
     }
 }

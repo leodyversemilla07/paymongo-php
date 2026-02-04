@@ -22,18 +22,18 @@ class InstallmentPlan extends BaseEntity
 
     public function __construct(ApiResource $apiResource)
     {
-        $attributes = $apiResource->attributes;
+        $attributes = $apiResource->attributes ?? [];
 
         $this->id = $apiResource->id;
-        $this->type = $attributes['type'];
-        $this->installments = $attributes['installments'];
-        $this->min_amount = $attributes['min_amount'];
-        $this->max_amount = $attributes['max_amount'];
-        $this->interest_rate = $attributes['interest_rate'];
-        $this->issuer = $attributes['issuer'];
-        $this->status = $attributes['status'];
-        $this->livemode = $attributes['livemode'];
-        $this->created_at = $attributes['created_at'];
-        $this->updated_at = $attributes['updated_at'];
+        $this->type = self::requireAttr($attributes, 'type');
+        $this->installments = self::requireAttr($attributes, 'installments');
+        $this->min_amount = self::requireAttr($attributes, 'min_amount');
+        $this->max_amount = self::requireAttr($attributes, 'max_amount');
+        $this->interest_rate = self::requireAttr($attributes, 'interest_rate');
+        $this->issuer = self::requireAttr($attributes, 'issuer');
+        $this->status = self::requireAttr($attributes, 'status');
+        $this->livemode = self::requireAttr($attributes, 'livemode');
+        $this->created_at = self::requireAttr($attributes, 'created_at');
+        $this->updated_at = self::requireAttr($attributes, 'updated_at');
     }
 }

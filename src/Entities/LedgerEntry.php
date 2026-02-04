@@ -22,17 +22,17 @@ class LedgerEntry extends BaseEntity
 
     public function __construct(ApiResource $apiResource)
     {
-        $attributes = $apiResource->attributes;
+        $attributes = $apiResource->attributes ?? [];
 
         $this->id = $apiResource->id;
-        $this->account_id = $attributes['account_id'];
-        $this->amount = $attributes['amount'];
-        $this->currency = $attributes['currency'];
-        $this->entry_type = $attributes['entry_type'];
-        $this->livemode = $attributes['livemode'];
-        $this->reference_number = $attributes['reference_number'];
-        $this->metadata = empty($attributes['metadata']) ? null : $attributes['metadata'];
-        $this->created_at = $attributes['created_at'];
-        $this->updated_at = $attributes['updated_at'];
+        $this->account_id = self::requireAttr($attributes, 'account_id');
+        $this->amount = self::requireAttr($attributes, 'amount');
+        $this->currency = self::requireAttr($attributes, 'currency');
+        $this->entry_type = self::requireAttr($attributes, 'entry_type');
+        $this->livemode = self::requireAttr($attributes, 'livemode');
+        $this->reference_number = self::attr($attributes, 'reference_number');
+        $this->metadata = empty(self::attr($attributes, 'metadata')) ? null : $attributes['metadata'];
+        $this->created_at = self::requireAttr($attributes, 'created_at');
+        $this->updated_at = self::requireAttr($attributes, 'updated_at');
     }
 }

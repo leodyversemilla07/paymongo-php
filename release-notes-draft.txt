@@ -1,0 +1,3 @@
+Release notes (final draft)
+
+This update focuses on reliability and coverage. Entity constructors now validate required fields and clearly surface missing attributes, while optional fields continue to default to null. We expanded integration-style tests across workflows, policies, ledgers, transfers, wallets, invoices, and related ledger resources, and added broad required-field and error-propagation coverage to keep service behavior consistent and predictable.

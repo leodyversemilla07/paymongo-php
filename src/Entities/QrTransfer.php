@@ -23,17 +23,17 @@ class QrTransfer extends BaseEntity
 
     public function __construct(ApiResource $apiResource)
     {
-        $attributes = $apiResource->attributes;
+        $attributes = $apiResource->attributes ?? [];
 
         $this->id = $apiResource->id;
-        $this->amount = $attributes['amount'];
-        $this->currency = $attributes['currency'];
-        $this->livemode = $attributes['livemode'];
-        $this->reference_number = $attributes['reference_number'];
-        $this->status = $attributes['status'];
-        $this->recipient = $attributes['recipient'];
-        $this->metadata = empty($attributes['metadata']) ? null : $attributes['metadata'];
-        $this->created_at = $attributes['created_at'];
-        $this->updated_at = $attributes['updated_at'];
+        $this->amount = self::requireAttr($attributes, 'amount');
+        $this->currency = self::requireAttr($attributes, 'currency');
+        $this->livemode = self::requireAttr($attributes, 'livemode');
+        $this->reference_number = self::attr($attributes, 'reference_number');
+        $this->status = self::requireAttr($attributes, 'status');
+        $this->recipient = self::attr($attributes, 'recipient');
+        $this->metadata = empty(self::attr($attributes, 'metadata')) ? null : $attributes['metadata'];
+        $this->created_at = self::requireAttr($attributes, 'created_at');
+        $this->updated_at = self::requireAttr($attributes, 'updated_at');
     }
 }

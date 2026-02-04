@@ -18,14 +18,14 @@ class Rate extends BaseEntity
 
     public function __construct(ApiResource $apiResource)
     {
-        $attributes = $apiResource->attributes;
+        $attributes = $apiResource->attributes ?? [];
 
         $this->id = $apiResource->id;
-        $this->currency_pair = $attributes['currency_pair'];
-        $this->provider = $attributes['provider'];
-        $this->rate = $attributes['rate'];
-        $this->livemode = $attributes['livemode'];
-        $this->created_at = $attributes['created_at'];
-        $this->updated_at = $attributes['updated_at'];
+        $this->currency_pair = self::requireAttr($attributes, 'currency_pair');
+        $this->provider = self::requireAttr($attributes, 'provider');
+        $this->rate = self::requireAttr($attributes, 'rate');
+        $this->livemode = self::requireAttr($attributes, 'livemode');
+        $this->created_at = self::requireAttr($attributes, 'created_at');
+        $this->updated_at = self::requireAttr($attributes, 'updated_at');
     }
 }

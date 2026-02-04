@@ -21,17 +21,17 @@ class Quote extends BaseEntity
 
     public function __construct(ApiResource $apiResource)
     {
-        $attributes = $apiResource->attributes;
+        $attributes = $apiResource->attributes ?? [];
 
         $this->id = $apiResource->id;
-        $this->amount = $attributes['amount'];
-        $this->currency = $attributes['currency'];
-        $this->converted_amount = $attributes['converted_amount'];
-        $this->converted_currency = $attributes['converted_currency'];
-        $this->provider = $attributes['provider'];
-        $this->rate_id = $attributes['rate_id'];
-        $this->livemode = $attributes['livemode'];
-        $this->created_at = $attributes['created_at'];
-        $this->updated_at = $attributes['updated_at'];
+        $this->amount = self::requireAttr($attributes, 'amount');
+        $this->currency = self::requireAttr($attributes, 'currency');
+        $this->converted_amount = self::requireAttr($attributes, 'converted_amount');
+        $this->converted_currency = self::requireAttr($attributes, 'converted_currency');
+        $this->provider = self::requireAttr($attributes, 'provider');
+        $this->rate_id = self::requireAttr($attributes, 'rate_id');
+        $this->livemode = self::requireAttr($attributes, 'livemode');
+        $this->created_at = self::requireAttr($attributes, 'created_at');
+        $this->updated_at = self::requireAttr($attributes, 'updated_at');
     }
 }

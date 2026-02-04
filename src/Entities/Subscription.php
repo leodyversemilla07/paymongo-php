@@ -32,24 +32,24 @@ class Subscription extends BaseEntity
 
     public function __construct(ApiResource $apiResource)
     {
-        $attributes = $apiResource->attributes;
+        $attributes = $apiResource->attributes ?? [];
 
         $this->id = $apiResource->id;
-        $this->billing = empty($attributes['billing']) ? null : new Billing(new ApiResource($attributes['billing']));
-        $this->cancel_at = $attributes['cancel_at'];
-        $this->canceled_at = $attributes['canceled_at'];
-        $this->current_period_end = $attributes['current_period_end'];
-        $this->current_period_start = $attributes['current_period_start'];
-        $this->customer = $attributes['customer'];
-        $this->livemode = $attributes['livemode'];
-        $this->next_billing_at = $attributes['next_billing_at'];
-        $this->payment_method = $attributes['payment_method'];
-        $this->plan = $attributes['plan'];
-        $this->reference_number = $attributes['reference_number'];
-        $this->start_date = $attributes['start_date'];
-        $this->status = $attributes['status'];
-        $this->metadata = empty($attributes['metadata']) ? null : $attributes['metadata'];
-        $this->created_at = $attributes['created_at'];
-        $this->updated_at = $attributes['updated_at'];
+        $this->billing = empty(self::attr($attributes, 'billing')) ? null : new Billing($attributes['billing']);
+        $this->cancel_at = self::attr($attributes, 'cancel_at');
+        $this->canceled_at = self::attr($attributes, 'canceled_at');
+        $this->current_period_end = self::attr($attributes, 'current_period_end');
+        $this->current_period_start = self::attr($attributes, 'current_period_start');
+        $this->customer = self::attr($attributes, 'customer');
+        $this->livemode = self::requireAttr($attributes, 'livemode');
+        $this->next_billing_at = self::attr($attributes, 'next_billing_at');
+        $this->payment_method = self::attr($attributes, 'payment_method');
+        $this->plan = self::attr($attributes, 'plan');
+        $this->reference_number = self::attr($attributes, 'reference_number');
+        $this->start_date = self::attr($attributes, 'start_date');
+        $this->status = self::requireAttr($attributes, 'status');
+        $this->metadata = empty(self::attr($attributes, 'metadata')) ? null : $attributes['metadata'];
+        $this->created_at = self::requireAttr($attributes, 'created_at');
+        $this->updated_at = self::requireAttr($attributes, 'updated_at');
     }
 }

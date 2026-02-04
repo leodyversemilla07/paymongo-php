@@ -37,36 +37,36 @@ class Payment extends BaseEntity
 
     public function __construct(ApiResource $apiResource)
     {
-        $attributes = $apiResource->attributes;
+        $attributes = $apiResource->attributes ?? [];
 
         $this->id = $apiResource->id;
-        $this->amount = $attributes['amount'];
-        $this->billing = is_null($attributes['billing']) ? null : new Billing($attributes['billing']);
-        $this->currency = $attributes['currency'];
-        $this->description = $attributes['description'];
-        $this->fee = $attributes['fee'];
-        $this->livemode = $attributes['livemode'];
-        $this->net_amount = $attributes['net_amount'];
-        $this->statement_descriptor = $attributes['statement_descriptor'];
-        $this->status = $attributes['status'];
-        $this->available_at = $attributes['available_at'];
-        $this->created_at = $attributes['created_at'];
-        $this->paid_at = $attributes['paid_at'];
-        $this->payout = $attributes['payout'];
-        $this->updated_at = $attributes['updated_at'];
-        $this->metadata = $attributes['metadata'];
-        $this->source = $attributes['source'];
-        $this->tax_amount = $attributes['tax_amount'];
-        $this->payment_intent_id = $attributes['payment_intent_id'];
+        $this->amount = self::requireAttr($attributes, 'amount');
+        $this->billing = ( (self::attr($attributes, 'billing')) === null ) ? null : new Billing($attributes['billing']);
+        $this->currency = self::requireAttr($attributes, 'currency');
+        $this->description = self::attr($attributes, 'description');
+        $this->fee = self::requireAttr($attributes, 'fee');
+        $this->livemode = self::requireAttr($attributes, 'livemode');
+        $this->net_amount = self::requireAttr($attributes, 'net_amount');
+        $this->statement_descriptor = self::attr($attributes, 'statement_descriptor');
+        $this->status = self::requireAttr($attributes, 'status');
+        $this->available_at = self::attr($attributes, 'available_at');
+        $this->created_at = self::requireAttr($attributes, 'created_at');
+        $this->paid_at = self::attr($attributes, 'paid_at');
+        $this->payout = self::attr($attributes, 'payout');
+        $this->updated_at = self::requireAttr($attributes, 'updated_at');
+        $this->metadata = self::attr($attributes, 'metadata');
+        $this->source = self::attr($attributes, 'source');
+        $this->tax_amount = self::attr($attributes, 'tax_amount');
+        $this->payment_intent_id = self::attr($attributes, 'payment_intent_id');
         $this->refunds = [];
 
-        if (is_array($attributes['refunds']) && !empty($attributes['refunds'])) {
+        if (is_array(self::attr($attributes, 'refunds')) && !empty(self::attr($attributes, 'refunds'))) {
             foreach ($attributes['refunds'] as $refund) {
                 $rowApiResource = new ApiResource($refund);
                 $this->refunds[] = new Refund($rowApiResource);
             }
         }
 
-        $this->taxes = $attributes['taxes'];
+        $this->taxes = self::attr($attributes, 'taxes');
     }
 }

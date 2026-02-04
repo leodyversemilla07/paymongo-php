@@ -21,16 +21,16 @@ class FileRecord extends BaseEntity
 
     public function __construct(ApiResource $apiResource)
     {
-        $attributes = $apiResource->attributes;
+        $attributes = $apiResource->attributes ?? [];
 
         $this->id = $apiResource->id;
-        $this->filename = $attributes['filename'];
-        $this->livemode = $attributes['livemode'];
-        $this->purpose = $attributes['purpose'];
-        $this->status = $attributes['status'];
-        $this->url = $attributes['url'];
-        $this->metadata = empty($attributes['metadata']) ? null : $attributes['metadata'];
-        $this->created_at = $attributes['created_at'];
-        $this->updated_at = $attributes['updated_at'];
+        $this->filename = self::requireAttr($attributes, 'filename');
+        $this->livemode = self::requireAttr($attributes, 'livemode');
+        $this->purpose = self::requireAttr($attributes, 'purpose');
+        $this->status = self::requireAttr($attributes, 'status');
+        $this->url = self::attr($attributes, 'url');
+        $this->metadata = empty(self::attr($attributes, 'metadata')) ? null : $attributes['metadata'];
+        $this->created_at = self::requireAttr($attributes, 'created_at');
+        $this->updated_at = self::requireAttr($attributes, 'updated_at');
     }
 }

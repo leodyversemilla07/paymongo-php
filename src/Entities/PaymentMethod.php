@@ -22,14 +22,14 @@ class PaymentMethod extends BaseEntity
 
     public function __construct(ApiResource $apiResource)
     {
-        $attributes = $apiResource->attributes;
+        $attributes = $apiResource->attributes ?? [];
 
         $this->id = $apiResource->id;
-        $this->type = $attributes['type'];
-        $this->billing = is_null($attributes['billing']) ? null : new Billing($attributes['billing']);
-        $this->details = $attributes['details'];
-        $this->metadata = empty($attributes['metadata']) ? null : $attributes['metadata'];
-        $this->created_at = $attributes['created_at'];
-        $this->updated_at = $attributes['updated_at'];
+        $this->type = self::requireAttr($attributes, 'type');
+        $this->billing = ( (self::attr($attributes, 'billing')) === null ) ? null : new Billing($attributes['billing']);
+        $this->details = self::attr($attributes, 'details');
+        $this->metadata = empty(self::attr($attributes, 'metadata')) ? null : $attributes['metadata'];
+        $this->created_at = self::requireAttr($attributes, 'created_at');
+        $this->updated_at = self::requireAttr($attributes, 'updated_at');
     }
 }

@@ -33,23 +33,23 @@ class Link extends BaseEntity
 
     public function __construct(ApiResource $apiResource)
     {
-        $attributes = $apiResource->attributes;
+        $attributes = $apiResource->attributes ?? [];
 
         $this->id = $apiResource->id;
-        $this->amount = $attributes['amount'];
-        $this->archived = $attributes['archived'];
-        $this->currency = $attributes['currency'];
-        $this->description = $attributes['description'];
-        $this->livemode = $attributes['livemode'];
-        $this->fee = $attributes['fee'];
-        $this->remarks = $attributes['remarks'];
-        $this->status = $attributes['status'];
-        $this->tax_amount = $attributes['tax_amount'];
-        $this->checkout_url = $attributes['checkout_url'];
-        $this->reference_number = $attributes['reference_number'];
+        $this->amount = self::requireAttr($attributes, 'amount');
+        $this->archived = self::requireAttr($attributes, 'archived');
+        $this->currency = self::requireAttr($attributes, 'currency');
+        $this->description = self::attr($attributes, 'description');
+        $this->livemode = self::requireAttr($attributes, 'livemode');
+        $this->fee = self::requireAttr($attributes, 'fee');
+        $this->remarks = self::attr($attributes, 'remarks');
+        $this->status = self::requireAttr($attributes, 'status');
+        $this->tax_amount = self::attr($attributes, 'tax_amount');
+        $this->checkout_url = self::requireAttr($attributes, 'checkout_url');
+        $this->reference_number = self::attr($attributes, 'reference_number');
         $this->payments = null;
         
-        if (!empty($attributes['payments'])) {
+        if (!empty(self::attr($attributes, 'payments'))) {
             $this->payments = [];
 
             foreach ($attributes['payments'] as $payment) {
@@ -57,9 +57,9 @@ class Link extends BaseEntity
             }
         }
         
-        $this->taxes = $attributes['taxes'];
-        $this->metadata = empty($attributes['metadata']) ? null : $attributes['metadata'];
-        $this->created_at = $attributes['created_at'];
-        $this->updated_at = $attributes['updated_at'];
+        $this->taxes = self::attr($attributes, 'taxes');
+        $this->metadata = empty(self::attr($attributes, 'metadata')) ? null : $attributes['metadata'];
+        $this->created_at = self::requireAttr($attributes, 'created_at');
+        $this->updated_at = self::requireAttr($attributes, 'updated_at');
     }
 }

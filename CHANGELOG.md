@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-02-04
+### Added
+- Expanded test coverage for service integrations, required-field validation, and webhook edge cases
+- Additional integration tests for ledger, wallet, and transfer flows
+
 ## [1.0.0] - 2026-02-02
 
 ### Added

@@ -57,7 +57,7 @@ $paymentIntent = $client->paymentIntents->create([
 ]);
 
 echo $paymentIntent->id;
-echo $paymentIntent->clientKey;
+echo $paymentIntent->client_key;
 ```
 
 ## Usage Examples
@@ -103,7 +103,7 @@ $checkoutSession = $client->checkoutSessions->create([
 ]);
 
 // Redirect user to checkout
-header('Location: ' . $checkoutSession->checkoutUrl);
+header('Location: ' . $checkoutSession->url);
 ```
 
 ### Refunds
@@ -253,6 +253,47 @@ $client = new PaymongoClient('sk_test_xxx', [
 
 ```bash
 composer test
+```
+
+## Test Coverage Notes
+
+- Unit tests validate request construction, entity hydration, and webhook signature handling.
+- Integration-style tests use a fake HTTP client to verify service responses and error propagation.
+
+## Required vs Optional Fields
+
+Entity constructors now validate required fields and throw `Paymongo\Exceptions\UnexpectedValueException`
+when the API response is missing required attributes. Optional fields are safely defaulted to `null`.
+
+Example:
+
+```php
+use Paymongo\ApiResource;
+use Paymongo\Entities\PaymentIntent;
+use Paymongo\Exceptions\UnexpectedValueException;
+
+$resource = new ApiResource([
+    'data' => [
+        'id' => 'pi_test_123',
+        'attributes' => [
+            // 'amount' is missing here
+            'capture_type' => 'automatic',
+            'client_key' => 'pi_client_key',
+            'currency' => 'PHP',
+            'livemode' => false,
+            'status' => 'awaiting_payment_method',
+            'payment_method_allowed' => ['card'],
+            'created_at' => 0,
+            'updated_at' => 0,
+        ],
+    ],
+]);
+
+try {
+    new PaymentIntent($resource);
+} catch (UnexpectedValueException $e) {
+    echo $e->getMessage();
+}
 ```
 
 ## Changelog

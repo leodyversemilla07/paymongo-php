@@ -23,18 +23,18 @@ class Cardholder extends BaseEntity
 
     public function __construct(ApiResource $apiResource)
     {
-        $attributes = $apiResource->attributes;
+        $attributes = $apiResource->attributes ?? [];
 
         $this->id = $apiResource->id;
-        $this->billing = empty($attributes['billing']) ? null : new Billing(new ApiResource($attributes['billing']));
-        $this->email = $attributes['email'];
-        $this->first_name = $attributes['first_name'];
-        $this->last_name = $attributes['last_name'];
-        $this->livemode = $attributes['livemode'];
-        $this->phone = $attributes['phone'];
-        $this->status = $attributes['status'];
-        $this->metadata = empty($attributes['metadata']) ? null : $attributes['metadata'];
-        $this->created_at = $attributes['created_at'];
-        $this->updated_at = $attributes['updated_at'];
+        $this->billing = empty(self::attr($attributes, 'billing')) ? null : new Billing($attributes['billing']);
+        $this->email = self::requireAttr($attributes, 'email');
+        $this->first_name = self::requireAttr($attributes, 'first_name');
+        $this->last_name = self::requireAttr($attributes, 'last_name');
+        $this->livemode = self::requireAttr($attributes, 'livemode');
+        $this->phone = self::attr($attributes, 'phone');
+        $this->status = self::requireAttr($attributes, 'status');
+        $this->metadata = empty(self::attr($attributes, 'metadata')) ? null : $attributes['metadata'];
+        $this->created_at = self::requireAttr($attributes, 'created_at');
+        $this->updated_at = self::requireAttr($attributes, 'updated_at');
     }
 }

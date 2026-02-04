@@ -15,10 +15,13 @@ class HttpClientFake extends HttpClient
     /** @var array<string, mixed>|null */
     public ?array $lastRequest = null;
     
-    /** @var array<ApiResource> */
+    /** @var array<ApiResource|\Throwable> */
     public array $queue = [];
     
     public int $normalizeCallCount = 0;
+    
+    /** @var array<string, mixed>|null */
+    public ?array $lastDecodedBody = null;
 
     /**
      * @param array<string, mixed> $config
@@ -55,12 +58,33 @@ class HttpClientFake extends HttpClient
             return new ApiResource([]);
         }
 
-        return array_shift($this->queue);
+        $response = array_shift($this->queue);
+
+        if ($response instanceof \Throwable) {
+            throw $response;
+        }
+
+        if ($response instanceof ApiResource) {
+            $this->lastDecodedBody = ['data' => $response->data];
+            return $response;
+        }
+
+        return new ApiResource([]);
     }
 
     protected function normalizeUrl(string $url): string
     {
         $this->normalizeCallCount++;
         return parent::normalizeUrl($url);
+    }
+
+    /**
+     * Expose JSON decoding for tests.
+     *
+     * @return array<string, mixed>
+     */
+    public function decodePublic(string $body): array
+    {
+        return $this->decodeJson($body);
     }
 }

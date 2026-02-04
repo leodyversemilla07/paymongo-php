@@ -20,10 +20,10 @@ class Event extends BaseEntity
 
     public function __construct(ApiResource $apiResource)
     {
-        $attributes = $apiResource->attributes;
+        $attributes = $apiResource->attributes ?? [];
 
         $this->id = $apiResource->id;
-        $this->resource = $attributes['data'];
-        $this->type = $attributes['type'];
+        $this->resource = self::requireAttr($attributes, 'data');
+        $this->type = self::requireAttr($attributes, 'type');
     }
 }

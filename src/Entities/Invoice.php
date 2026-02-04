@@ -26,20 +26,20 @@ class Invoice extends BaseEntity
 
     public function __construct(ApiResource $apiResource)
     {
-        $attributes = $apiResource->attributes;
+        $attributes = $apiResource->attributes ?? [];
 
         $this->id = $apiResource->id;
-        $this->amount = $attributes['amount'];
-        $this->amount_due = $attributes['amount_due'];
-        $this->billing = empty($attributes['billing']) ? null : new Billing(new ApiResource($attributes['billing']));
-        $this->currency = $attributes['currency'];
-        $this->due_date = $attributes['due_date'];
-        $this->livemode = $attributes['livemode'];
-        $this->line_items = $attributes['line_items'];
-        $this->metadata = empty($attributes['metadata']) ? null : $attributes['metadata'];
-        $this->paid_at = $attributes['paid_at'];
-        $this->status = $attributes['status'];
-        $this->created_at = $attributes['created_at'];
-        $this->updated_at = $attributes['updated_at'];
+        $this->amount = self::requireAttr($attributes, 'amount');
+        $this->amount_due = self::requireAttr($attributes, 'amount_due');
+        $this->billing = empty(self::attr($attributes, 'billing')) ? null : new Billing($attributes['billing']);
+        $this->currency = self::requireAttr($attributes, 'currency');
+        $this->due_date = self::attr($attributes, 'due_date');
+        $this->livemode = self::requireAttr($attributes, 'livemode');
+        $this->line_items = self::requireAttr($attributes, 'line_items');
+        $this->metadata = empty(self::attr($attributes, 'metadata')) ? null : $attributes['metadata'];
+        $this->paid_at = self::attr($attributes, 'paid_at');
+        $this->status = self::requireAttr($attributes, 'status');
+        $this->created_at = self::requireAttr($attributes, 'created_at');
+        $this->updated_at = self::requireAttr($attributes, 'updated_at');
     }
 }

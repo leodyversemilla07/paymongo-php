@@ -21,16 +21,16 @@ class Ledger extends BaseEntity
 
     public function __construct(ApiResource $apiResource)
     {
-        $attributes = $apiResource->attributes;
+        $attributes = $apiResource->attributes ?? [];
 
         $this->id = $apiResource->id;
-        $this->currency = $attributes['currency'];
-        $this->description = $attributes['description'];
-        $this->livemode = $attributes['livemode'];
-        $this->name = $attributes['name'];
-        $this->status = $attributes['status'];
-        $this->metadata = empty($attributes['metadata']) ? null : $attributes['metadata'];
-        $this->created_at = $attributes['created_at'];
-        $this->updated_at = $attributes['updated_at'];
+        $this->currency = self::requireAttr($attributes, 'currency');
+        $this->description = self::attr($attributes, 'description');
+        $this->livemode = self::requireAttr($attributes, 'livemode');
+        $this->name = self::requireAttr($attributes, 'name');
+        $this->status = self::requireAttr($attributes, 'status');
+        $this->metadata = empty(self::attr($attributes, 'metadata')) ? null : $attributes['metadata'];
+        $this->created_at = self::requireAttr($attributes, 'created_at');
+        $this->updated_at = self::requireAttr($attributes, 'updated_at');
     }
 }

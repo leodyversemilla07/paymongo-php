@@ -103,13 +103,20 @@ class HttpClient
         $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $effectiveUrl = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
 
+        if ($body === false) {
+            $error = curl_error($ch);
+            $errno = curl_errno($ch);
+            curl_close($ch);
+            $this->throwCurlFailure($error, $errno);
+        }
+
         curl_close($ch);
 
         if ($code < 200 || $code >= 400) {
             $this->handleErrorResponse((string) $body, $code, $effectiveUrl);
         }
 
-        $jsonBody = json_decode((string) $body, true);
+        $jsonBody = $this->decodeJson((string) $body);
 
         return new ApiResource($jsonBody);
     }
@@ -145,5 +152,43 @@ class HttpClient
     protected function normalizeUrl(string $url): string
     {
         return preg_replace('#(?<!:)//+#', '/', $url);
+    }
+
+    /**
+     * Decode JSON response body.
+     *
+     * @return array<string, mixed>
+     * @throws BaseException
+     */
+    protected function decodeJson(string $body): array
+    {
+        if ($body === '') {
+            return [];
+        }
+
+        $jsonBody = json_decode($body, true);
+        if ($jsonBody === null && json_last_error() !== JSON_ERROR_NONE) {
+            throw new BaseException([
+                'errors' => [[
+                    'detail' => 'Invalid JSON response: ' . json_last_error_msg(),
+                ]],
+            ]);
+        }
+
+        return $jsonBody ?? [];
+    }
+
+    /**
+     * Throw a BaseException for a cURL failure.
+     *
+     * @throws BaseException
+     */
+    protected function throwCurlFailure(string $error, int $errno): never
+    {
+        throw new BaseException([
+            'errors' => [[
+                'detail' => "cURL error {$errno}: {$error}",
+            ]],
+        ]);
     }
 }
