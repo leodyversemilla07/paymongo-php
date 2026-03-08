@@ -13,7 +13,7 @@ use Paymongo\Entities\MerchantCapability;
  */
 class MerchantCapabilityService extends BaseService
 {
-    private const URI = '/merchant_capabilities';
+    private const URI = '/merchants/capabilities/payment_methods';
 
     /**
      * List all merchant capabilities.

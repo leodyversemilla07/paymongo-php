@@ -21,6 +21,9 @@ Core
 - Customers v2: create/list/retrieve/update
   - Service: src/Services/CustomerV2Service.php
   - Tests: tests/CustomerV2ServiceTest.php
+- Links: list/retrieve/retrieve by reference number/create/archive/unarchive
+  - Service: src/Services/LinkService.php
+  - Tests: tests/LinkServiceTest.php
 - Webhooks: create/retrieve/list/update/enable/disable/construct event
   - Service: src/Services/WebhookService.php
   - Tests: tests/WebhookServiceTest.php, tests/WebhookToggleServiceTest.php, tests/WebhookSignatureTest.php
@@ -153,3 +156,12 @@ Legacy (Deprecated)
 - Wallet Transactions v1: list/create/retrieve/receiving institutions
   - Service: src/Services/LegacyWalletTransactionService.php
   - Tests: tests/LegacyWalletTransactionServiceTest.php
+- Sources: create/retrieve
+  - Service: src/Services/SourceService.php
+  - Status: legacy surface; PayMongo recommends Payment Intents for new integrations
+
+Not Yet Implemented
+- Platforms / sub-account APIs
+- Capital APIs
+- Reconciliation APIs
+- Prism / Data query surfaces

@@ -17,6 +17,7 @@ final class PaymongoClientTest extends TestCase
             'timeout' => 5,
             'connect_timeout' => 3,
             'idempotency_key' => 'idem_123',
+            'customer_bearer_token' => 'jwt_customer_token',
             'http_headers' => ['X-Test: true'],
         ]);
 
@@ -24,6 +25,7 @@ final class PaymongoClientTest extends TestCase
         $this->assertSame('v9', $client->apiVersion);
         $this->assertSame('sk_test_key', $client->apiKey);
         $this->assertSame('idem_123', $client->config['idempotency_key']);
+        $this->assertSame('jwt_customer_token', $client->config['customer_bearer_token']);
         $this->assertSame(5, $client->config['timeout']);
         $this->assertSame(3, $client->config['connect_timeout']);
         $this->assertSame(['X-Test: true'], $client->config['http_headers']);

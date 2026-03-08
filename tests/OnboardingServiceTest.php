@@ -42,7 +42,7 @@ final class OnboardingServiceTest extends TestCase
         ]);
 
         $this->assertSame('POST', $fake->lastRequest['method']);
-        $this->assertSame('https://api.paymongo.com/v1/child_merchants', $fake->lastRequest['url']);
+        $this->assertSame('https://api.paymongo.com/v1/merchants/children', $fake->lastRequest['url']);
         $this->assertSame('Test Business', $fake->lastRequest['params']['business']['name']);
     }
 }

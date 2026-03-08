@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-03-08
+### Added
+- Payment Intent `attach` support
+- Payment Method `update` support
+- Link retrieval by reference number
+- `customer_bearer_token` configuration for `customersV2`
+- Transport-level regression coverage for request assembly, multipart uploads, header overrides, and error shaping
+
+### Changed
+- Aligned merchant capabilities, installment plans, onboarding requirements, child-merchant, and document-upload routes with current PayMongo documentation
+- Added support for raw request bodies, per-request header overrides, and `PATCH` request payloads in the HTTP client
+- Hardened webhook signature parsing to validate keyed header segments instead of relying on positional parsing
+- Clarified SDK coverage, legacy APIs, and unsupported newer PayMongo product areas in the documentation
+
+### Fixed
+- Multipart file upload requests now send their custom body and headers correctly
+- Legacy `PayMongo\\` namespace compatibility under Composer autoloading
+- `customersV2` can now use Bearer authorization without duplicating the default Basic auth header
+
 ## [1.0.1] - 2026-02-04
 ### Added
 - Expanded test coverage for service integrations, required-field validation, and webhook edge cases

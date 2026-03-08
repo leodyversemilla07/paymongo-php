@@ -47,7 +47,14 @@ final class FileRecordServiceTest extends TestCase
         ]);
 
         $this->assertSame('POST', $fake->lastRequest['method']);
-        $this->assertSame('https://api.paymongo.com/v1/child_merchants/cm_test_123/file_records', $fake->lastRequest['url']);
+        $this->assertSame('https://api.paymongo.com/v1/merchants/children/cm_test_123/documents', $fake->lastRequest['url']);
+        $this->assertArrayNotHasKey('params', $fake->lastRequest);
+        $this->assertStringContainsString('Content-Type: multipart/form-data; boundary=', $fake->lastRequest['headers'][0]);
         $this->assertStringContainsString('multipart/form-data', $fake->lastRequest['content_type']);
+        $this->assertStringContainsString('name="purpose"', $fake->lastRequest['body']);
+        $this->assertStringContainsString('verification', $fake->lastRequest['body']);
+        $this->assertStringContainsString('filename="test.txt"', $fake->lastRequest['body']);
+        $this->assertStringContainsString('Content-Type: text/plain', $fake->lastRequest['body']);
+        $this->assertStringContainsString('hello', $fake->lastRequest['body']);
     }
 }

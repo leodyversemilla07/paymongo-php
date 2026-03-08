@@ -28,14 +28,15 @@
   },
   "autoload": {
     "psr-4": {
-      "Paymongo\\": "src/"
+      "Paymongo\\": "src/",
+      "PayMongo\\": "src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "Paymongo\\Tests\\Support\\": "tests/Support/"
+      "Paymongo\\Tests\\Support\\": "tests/Support/",
+      "PayMongo\\Tests\\Support\\": "tests/Support/"
     }
   }
 }
-
 

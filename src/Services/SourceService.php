@@ -8,6 +8,8 @@ use Paymongo\Entities\Source;
 
 /**
  * Service for managing PayMongo Sources.
+ *
+ * @deprecated PayMongo's current documentation recommends Payment Intents for new integrations.
  */
 class SourceService extends BaseService
 {

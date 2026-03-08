@@ -36,6 +36,6 @@ final class RequirementServiceTest extends TestCase
         $client->requirements->retrieveChildMerchant('cm_test_123');
 
         $this->assertSame('GET', $fake->lastRequest['method']);
-        $this->assertSame('https://api.paymongo.com/v1/child_merchants/cm_test_123/requirements', $fake->lastRequest['url']);
+        $this->assertSame('https://api.paymongo.com/v1/merchants/children/cm_test_123/requirements', $fake->lastRequest['url']);
     }
 }

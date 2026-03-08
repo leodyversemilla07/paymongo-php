@@ -13,7 +13,7 @@ use Paymongo\Entities\Listing;
  */
 class ChildMerchantService extends BaseService
 {
-    private const URI = '/child_merchants';
+    private const URI = '/merchants/children';
 
     /**
      * Create a new child merchant.

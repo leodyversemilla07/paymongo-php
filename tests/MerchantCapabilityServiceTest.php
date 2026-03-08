@@ -27,6 +27,6 @@ final class MerchantCapabilityServiceTest extends TestCase
         $client->merchantCapabilities->all();
 
         $this->assertSame('GET', $fake->lastRequest['method']);
-        $this->assertSame('https://api.paymongo.com/v1/merchant_capabilities', $fake->lastRequest['url']);
+        $this->assertSame('https://api.paymongo.com/v1/merchants/capabilities/payment_methods', $fake->lastRequest['url']);
     }
 }

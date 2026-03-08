@@ -43,6 +43,22 @@ class PaymentIntentService extends BaseService
     }
 
     /**
+     * Attach a payment method to a payment intent.
+     *
+     * @param array<string, mixed> $params
+     */
+    public function attach(string $id, array $params): PaymentIntent
+    {
+        $apiResource = $this->httpClient->request([
+            'method' => 'POST',
+            'url'    => $this->buildUrl(self::URI . "/{$id}/attach"),
+            'params' => $params
+        ]);
+
+        return new PaymentIntent($apiResource);
+    }
+
+    /**
      * Capture a payment intent.
      *
      * @param array<string, mixed> $params

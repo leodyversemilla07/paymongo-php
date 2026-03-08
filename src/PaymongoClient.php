@@ -29,7 +29,7 @@ use Paymongo\Services\BaseService;
 class PaymongoClient
 {
     /** SDK version */
-    public const VERSION = '1.0.0';
+    public const VERSION = '1.1.0';
 
     /** @var array<string, mixed> Configuration options */
     public array $config = [];
@@ -57,6 +57,7 @@ class PaymongoClient
             'timeout' => null,
             'connect_timeout' => null,
             'idempotency_key' => null,
+            'customer_bearer_token' => null,
             'http_headers' => [],
             'http_client' => null,
         ], $config);

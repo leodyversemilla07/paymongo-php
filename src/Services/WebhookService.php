@@ -129,25 +129,11 @@ class WebhookService extends BaseService
             throw new UnexpectedValueException('Signature must be a string.');
         }
 
-        $arrSignature = explode(',', $signatureHeader);
-
-        if ($arrSignature === false || count($arrSignature) < 3) {
-            throw new UnexpectedValueException('The format of the signature is invalid.');
-        }
-
-        $timestamp = explode('=', $arrSignature[0])[1];
-        $testModeSignature = explode('=', $arrSignature[1])[1];
-        $liveModeSignature = explode('=', $arrSignature[2])[1];
-
-        $comparisonSignature = '';
-        
-        if (!empty($testModeSignature)) {
-            $comparisonSignature = $testModeSignature;
-        }
-
-        if (!empty($liveModeSignature)) {
-            $comparisonSignature = $liveModeSignature;
-        }
+        $signatureParts = $this->parseSignatureHeader($signatureHeader);
+        $timestamp = $signatureParts['t'];
+        $comparisonSignature = $signatureParts['li'] !== ''
+            ? $signatureParts['li']
+            : $signatureParts['te'];
 
         if (!hash_equals(hash_hmac('sha256', $timestamp . '.' . $payload, $webhookSecretKey), $comparisonSignature)) {
             throw new SignatureVerificationException("The signature is invalid.");
@@ -158,5 +144,46 @@ class WebhookService extends BaseService
         $apiResource = new ApiResource($jsonDecodedBody);
 
         return new Event($apiResource);
+    }
+
+    /**
+     * Parse a PayMongo webhook signature header into its required parts.
+     *
+     * @return array{t: string, te: string, li: string}
+     * @throws UnexpectedValueException
+     */
+    private function parseSignatureHeader(string $signatureHeader): array
+    {
+        $parts = [];
+
+        foreach (explode(',', $signatureHeader) as $segment) {
+            $segment = trim($segment);
+
+            if ($segment === '') {
+                continue;
+            }
+
+            $pair = explode('=', $segment, 2);
+
+            if (count($pair) !== 2 || trim($pair[0]) === '') {
+                throw new UnexpectedValueException('The format of the signature is invalid.');
+            }
+
+            $parts[trim($pair[0])] = trim($pair[1]);
+        }
+
+        if (!array_key_exists('t', $parts) || $parts['t'] === '') {
+            throw new UnexpectedValueException('The signature timestamp is missing.');
+        }
+
+        if (!array_key_exists('te', $parts) && !array_key_exists('li', $parts)) {
+            throw new UnexpectedValueException('The signature is missing.');
+        }
+
+        return [
+            't' => $parts['t'],
+            'te' => $parts['te'] ?? '',
+            'li' => $parts['li'] ?? '',
+        ];
     }
 }

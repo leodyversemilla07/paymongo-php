@@ -48,4 +48,38 @@ final class CustomerV2ServiceTest extends TestCase
         $this->assertSame('https://api.paymongo.com/v2/customers', $fake->lastRequest['url']);
         $this->assertSame('test@example.com', $fake->lastRequest['params']['email']);
     }
+
+    public function testCustomerV2UsesBearerTokenWhenConfigured(): void
+    {
+        $fake = new HttpClientFake([
+            'api_key' => 'sk_test_key'
+        ]);
+        $fake->queueResponse(new ApiResource([
+            'data' => [
+                'id' => 'cus_test_123',
+                'attributes' => [
+                    'default_device' => null,
+                    'default_payment_method_id' => null,
+                    'email' => 'test@example.com',
+                    'first_name' => 'Test',
+                    'last_name' => 'User',
+                    'livemode' => false,
+                    'organization_id' => null,
+                    'phone' => '1234567890',
+                    'created_at' => 0,
+                    'updated_at' => 0
+                ]
+            ]
+        ]));
+
+        $client = new PaymongoClient('sk_test_key', [
+            'http_client' => $fake,
+            'customer_bearer_token' => 'jwt_customer_token',
+        ]);
+
+        $client->customersV2->retrieve('cus_test_123');
+
+        $this->assertSame(['Authorization: Bearer jwt_customer_token'], $fake->lastRequest['headers']);
+        $this->assertSame('https://api.paymongo.com/v2/customers/cus_test_123', $fake->lastRequest['url']);
+    }
 }

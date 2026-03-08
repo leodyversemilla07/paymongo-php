@@ -55,4 +55,47 @@ final class PaymentIntentServiceTest extends TestCase
         $this->assertSame('https://api.paymongo.com/v1/payment_intents', $fake->lastRequest['url']);
         $this->assertSame(10000, $fake->lastRequest['params']['amount']);
     }
+
+    public function testAttachPaymentIntentBuildsRequest(): void
+    {
+        $fake = new HttpClientFake([
+            'api_key' => 'sk_test_key'
+        ]);
+        $fake->queueResponse(new ApiResource([
+            'data' => [
+                'id' => 'pi_test_123',
+                'attributes' => [
+                    'amount' => 10000,
+                    'capture_type' => 'automatic',
+                    'client_key' => 'pi_client_key',
+                    'currency' => 'PHP',
+                    'description' => 'Test',
+                    'livemode' => false,
+                    'last_payment_error' => null,
+                    'statement_descriptor' => null,
+                    'status' => 'processing',
+                    'payment_method_allowed' => ['card'],
+                    'payments' => [],
+                    'next_action' => null,
+                    'payment_method_options' => null,
+                    'metadata' => null,
+                    'setup_future_usage' => null,
+                    'created_at' => 0,
+                    'updated_at' => 0
+                ]
+            ]
+        ]));
+
+        $client = new PaymongoClient('sk_test_key', [
+            'http_client' => $fake
+        ]);
+
+        $client->paymentIntents->attach('pi_test_123', [
+            'payment_method' => 'pm_test_123',
+        ]);
+
+        $this->assertSame('POST', $fake->lastRequest['method']);
+        $this->assertSame('https://api.paymongo.com/v1/payment_intents/pi_test_123/attach', $fake->lastRequest['url']);
+        $this->assertSame('pm_test_123', $fake->lastRequest['params']['payment_method']);
+    }
 }

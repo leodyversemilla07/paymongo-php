@@ -51,4 +51,38 @@ final class PaymentMethodServiceTest extends TestCase
         $this->assertSame('https://api.paymongo.com/v1/payment_methods', $fake->lastRequest['url']);
         $this->assertSame('card', $fake->lastRequest['params']['type']);
     }
+
+    public function testUpdatePaymentMethodBuildsRequest(): void
+    {
+        $fake = new HttpClientFake([
+            'api_key' => 'sk_test_key'
+        ]);
+        $fake->queueResponse(new ApiResource([
+            'data' => [
+                'id' => 'pm_test_123',
+                'attributes' => [
+                    'type' => 'card',
+                    'billing' => null,
+                    'details' => ['last4' => '4242'],
+                    'metadata' => ['order_id' => 'order_123'],
+                    'created_at' => 0,
+                    'updated_at' => 1
+                ]
+            ]
+        ]));
+
+        $client = new PaymongoClient('sk_test_key', [
+            'http_client' => $fake
+        ]);
+
+        $client->paymentMethods->update('pm_test_123', [
+            'metadata' => [
+                'order_id' => 'order_123',
+            ],
+        ]);
+
+        $this->assertSame('PUT', $fake->lastRequest['method']);
+        $this->assertSame('https://api.paymongo.com/v1/payment_methods/pm_test_123', $fake->lastRequest['url']);
+        $this->assertSame('order_123', $fake->lastRequest['params']['metadata']['order_id']);
+    }
 }

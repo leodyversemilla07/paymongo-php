@@ -13,7 +13,7 @@ use Paymongo\Entities\Listing;
  */
 class InstallmentPlanService extends BaseService
 {
-    private const URI = '/installment_plans';
+    private const URI = '/card_installment_plans';
 
     /**
      * List all installment plans.

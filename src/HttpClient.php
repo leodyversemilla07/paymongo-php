@@ -46,12 +46,7 @@ class HttpClient
      */
     public function request(array $opts): ApiResource
     {
-        $url = $opts['url'];
-        $url = $this->normalizeUrl($url);
-
-        if (isset($opts['params']) && $opts['method'] === 'GET') {
-            $url .= '?' . http_build_query($opts['params']);
-        }
+        $url = $this->buildRequestUrl($opts);
 
         $ch = curl_init($url);
 
@@ -66,33 +61,15 @@ class HttpClient
         curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
         curl_setopt($ch, CURLOPT_HEADER, 0);
         
-        $headers = [
-            'Content-Type:application/json',
-            'Authorization: Basic ' . base64_encode($this->apiKey . ':'),
-        ];
-        
-        if (!empty($this->config['http_headers'])) {
-            $headers = array_merge($headers, $this->config['http_headers']);
-        }
-
-        if (array_key_exists('idempotency_key', $opts)) {
-            $headers[] = 'Idempotency-Key: ' . $opts['idempotency_key'];
-        } elseif (!empty($this->config['idempotency_key'])) {
-            $headers[] = 'Idempotency-Key: ' . $this->config['idempotency_key'];
-        }
+        $headers = $this->buildHeaders($opts);
 
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-        if (in_array($opts['method'], ['DELETE', 'POST', 'PUT'])) {
-            if (isset($opts['params'])) {
-                $data = [
-                    'data' => [
-                        'attributes' => $opts['params']
-                    ]
-                ];
-                $dataString = json_encode($data);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $dataString);
+        if (in_array($opts['method'], ['DELETE', 'PATCH', 'POST', 'PUT'])) {
+            $requestBody = $this->buildRequestBody($opts);
+            if ($requestBody !== null) {
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $requestBody);
             }
 
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $opts['method']);
@@ -132,18 +109,7 @@ class HttpClient
      */
     private function handleErrorResponse(string $body, int $code, string $url): never
     {
-        $jsonBody = json_decode($body, true);
-
-        $exception = match ($code) {
-            401 => new AuthenticationException($jsonBody),
-            400 => new InvalidRequestException($jsonBody),
-            404 => !empty($body)
-                ? new ResourceNotFoundException($jsonBody)
-                : new RouteNotFoundException("Route {$url} not found."),
-            default => new BaseException($jsonBody),
-        };
-
-        throw $exception;
+        throw $this->buildErrorException($body, $code, $url);
     }
 
     /**
@@ -152,6 +118,122 @@ class HttpClient
     protected function normalizeUrl(string $url): string
     {
         return preg_replace('#(?<!:)//+#', '/', $url);
+    }
+
+    /**
+     * Build the final request URL including GET query parameters.
+     *
+     * @param array<string, mixed> $opts
+     */
+    protected function buildRequestUrl(array $opts): string
+    {
+        $url = $this->normalizeUrl($opts['url']);
+
+        if (isset($opts['params']) && $opts['method'] === 'GET') {
+            $url .= '?' . http_build_query($opts['params']);
+        }
+
+        return $url;
+    }
+
+    /**
+     * Build HTTP headers for a request.
+     *
+     * @param array<string, mixed> $opts
+     * @return array<int, string>
+     */
+    protected function buildHeaders(array $opts): array
+    {
+        $headers = [];
+        
+        if (!empty($this->config['http_headers'])) {
+            $headers = array_merge($headers, $this->config['http_headers']);
+        }
+
+        if (!empty($opts['headers'])) {
+            $headers = array_merge($headers, $opts['headers']);
+        }
+
+        if (!$this->hasHeader($headers, 'Authorization')) {
+            $headers[] = 'Authorization: Basic ' . base64_encode($this->apiKey . ':');
+        }
+
+        if (!$this->hasHeader($headers, 'Content-Type')) {
+            $headers[] = 'Content-Type:application/json';
+        }
+
+        if (array_key_exists('idempotency_key', $opts)) {
+            $headers[] = 'Idempotency-Key: ' . $opts['idempotency_key'];
+        } elseif (!empty($this->config['idempotency_key'])) {
+            $headers[] = 'Idempotency-Key: ' . $this->config['idempotency_key'];
+        }
+
+        return $headers;
+    }
+
+    /**
+     * Check whether a header list already contains a header name.
+     *
+     * @param array<int, string> $headers
+     */
+    protected function hasHeader(array $headers, string $name): bool
+    {
+        foreach ($headers as $header) {
+            if (str_starts_with(strtolower($header), strtolower($name) . ':')) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Build the request body for non-GET requests.
+     *
+     * @param array<string, mixed> $opts
+     */
+    protected function buildRequestBody(array $opts): ?string
+    {
+        if (array_key_exists('body', $opts)) {
+            return $opts['body'];
+        }
+
+        if (!isset($opts['params'])) {
+            return null;
+        }
+
+        $data = [
+            'data' => [
+                'attributes' => $opts['params']
+            ]
+        ];
+
+        return json_encode($data);
+    }
+
+    /**
+     * Build an exception for an error response.
+     */
+    protected function buildErrorException(string $body, int $code, string $url): \Exception
+    {
+        $jsonBody = json_decode($body, true);
+
+        if (!is_array($jsonBody)) {
+            $jsonBody = [
+                'errors' => [[
+                    'detail' => $body !== '' ? $body : "HTTP {$code} returned an empty response.",
+                ]],
+            ];
+        }
+
+        return match ($code) {
+            401 => new AuthenticationException($jsonBody),
+            400 => new InvalidRequestException($jsonBody),
+            404 => $body !== ''
+                ? new ResourceNotFoundException($jsonBody)
+                : new RouteNotFoundException("Route {$url} not found."),
+            default => new BaseException($jsonBody),
+        };
     }
 
     /**

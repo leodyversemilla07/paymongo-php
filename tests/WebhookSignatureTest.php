@@ -110,4 +110,38 @@ final class WebhookSignatureTest extends TestCase
             'webhook_secret_key' => $secret
         ]);
     }
+
+    public function testConstructEventAcceptsReorderedHeaderFields(): void
+    {
+        $client = new \Paymongo\PaymongoClient('sk_test_key');
+        $payload = file_get_contents(__DIR__ . '/fixtures/sample_event.json');
+        $secret = 'whsec_test';
+
+        $timestamp = time();
+        $signature = hash_hmac('sha256', $timestamp . '.' . $payload, $secret);
+        $header = "li=,te={$signature},t={$timestamp}";
+
+        $event = $client->webhooks->constructEvent([
+            'payload' => $payload,
+            'signature_header' => $header,
+            'webhook_secret_key' => $secret
+        ]);
+
+        $this->assertSame('evt_test_123', $event->id);
+    }
+
+    public function testConstructEventRejectsMalformedHeaderSegment(): void
+    {
+        $this->expectException(\Paymongo\Exceptions\UnexpectedValueException::class);
+
+        $client = new \Paymongo\PaymongoClient('sk_test_key');
+        $payload = file_get_contents(__DIR__ . '/fixtures/sample_event.json');
+        $secret = 'whsec_test';
+
+        $client->webhooks->constructEvent([
+            'payload' => $payload,
+            'signature_header' => 't=123,te,li=',
+            'webhook_secret_key' => $secret
+        ]);
+    }
 }

@@ -56,6 +56,19 @@ class LinkService extends BaseService
     }
 
     /**
+     * Retrieve a link by reference number.
+     */
+    public function getByReferenceNumber(string $referenceNumber): Link
+    {
+        $apiResource = $this->httpClient->request([
+            'method' => 'GET',
+            'url'    => $this->buildUrl(self::URI . "/reference_number/{$referenceNumber}"),
+        ]);
+
+        return new Link($apiResource);
+    }
+
+    /**
      * Create a new link.
      *
      * @param array<string, mixed> $params

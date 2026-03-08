@@ -10,7 +10,7 @@ use Paymongo\Entities\Listing;
 use Paymongo\Entities\PaymentMethod;
 
 /**
- * Service for managing PayMongo Customers.
+ * Service for managing the legacy PayMongo Customers API.
  */
 class CustomerService extends BaseService
 {

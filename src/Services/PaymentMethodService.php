@@ -41,4 +41,20 @@ class PaymentMethodService extends BaseService
 
         return new PaymentMethod($apiResource);
     }
+
+    /**
+     * Update a payment method.
+     *
+     * @param array<string, mixed> $params
+     */
+    public function update(string $id, array $params): PaymentMethod
+    {
+        $apiResource = $this->httpClient->request([
+            'method' => 'PUT',
+            'url'    => $this->buildUrl(self::URI . "/{$id}"),
+            'params' => $params
+        ]);
+
+        return new PaymentMethod($apiResource);
+    }
 }

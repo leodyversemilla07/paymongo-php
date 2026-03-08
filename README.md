@@ -5,11 +5,11 @@
 [![License](https://img.shields.io/github/license/leodyversemilla07/paymongo-php.svg?style=flat-square)](LICENSE)
 [![PHP Version](https://img.shields.io/packagist/php-v/leodyversemilla07/paymongo-php.svg?style=flat-square)](https://packagist.org/packages/leodyversemilla07/paymongo-php)
 
-A comprehensive PHP SDK for integrating with the [PayMongo](https://paymongo.com) payment gateway API.
+A PHP SDK for integrating with the [PayMongo](https://paymongo.com) API across payments, checkout, subscriptions, webhooks, transfers, issuing, and onboarding resources.
 
 ## Features
 
-- Complete PayMongo API coverage
+- Broad PayMongo API coverage for currently implemented resources
 - Payment Intents, Payment Methods, Payments, Refunds
 - Checkout Sessions, Links
 - QR Ph payments
@@ -74,6 +74,11 @@ $paymentIntent = $client->paymentIntents->create([
 
 // Retrieve a payment intent
 $paymentIntent = $client->paymentIntents->retrieve('pi_xxx');
+
+// Attach a payment method to a payment intent
+$paymentIntent = $client->paymentIntents->attach('pi_xxx', [
+    'payment_method' => 'pm_xxx',
+]);
 
 // Capture a payment intent
 $paymentIntent = $client->paymentIntents->capture('pi_xxx', [
@@ -218,6 +223,15 @@ $client = new PaymongoClient('sk_test_xxx', [
 ]);
 ```
 
+For `customersV2`, you can provide a Bearer token when your integration uses PayMongo's JWT-based
+customer authentication flow:
+
+```php
+$client = new PaymongoClient('sk_test_xxx', [
+    'customer_bearer_token' => 'jwt_customer_token',
+]);
+```
+
 ## Available Services
 
 | Service | Description |
@@ -227,7 +241,7 @@ $client = new PaymongoClient('sk_test_xxx', [
 | `payments` | Payments API |
 | `refunds` | Refunds API |
 | `customers` | Customers API (v1) |
-| `customersV2` | Customers API (v2) |
+| `customersV2` | Customers API (v2, supports `customer_bearer_token`) |
 | `checkoutSessions` | Checkout Sessions API |
 | `links` | Payment Links API |
 | `webhooks` | Webhooks API |
@@ -259,6 +273,20 @@ composer test
 
 - Unit tests validate request construction, entity hydration, and webhook signature handling.
 - Integration-style tests use a fake HTTP client to verify service responses and error propagation.
+
+## Legacy APIs
+
+`sources` remains available for legacy integrations, but PayMongo's current documentation recommends
+using Payment Intents for new implementations.
+
+`customers` maps to the older customer/card-vaulting surface, while `customersV2` maps to the
+current v2 customer endpoints. When using `customersV2`, set `customer_bearer_token` in the client
+config if your integration follows PayMongo's JWT Bearer authentication flow for that API.
+
+## Not Yet Implemented
+
+The current PayMongo documentation also includes newer product areas that are not yet covered by
+this SDK, including Platforms, Capital, Reconciliation, and Prism/Data surfaces.
 
 ## Required vs Optional Fields
 

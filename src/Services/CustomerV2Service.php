@@ -22,11 +22,11 @@ class CustomerV2Service extends BaseService
      */
     public function create(array $params): Customer
     {
-        $apiResource = $this->httpClient->request([
+        $apiResource = $this->httpClient->request($this->buildRequest([
             'method' => 'POST',
             'url'    => "{$this->client->apiBaseUrl}/v2" . self::URI,
             'params' => $params
-        ]);
+        ]));
 
         return new Customer($apiResource);
     }
@@ -38,11 +38,11 @@ class CustomerV2Service extends BaseService
      */
     public function all(array $params = []): Listing
     {
-        $apiResource = $this->httpClient->request([
+        $apiResource = $this->httpClient->request($this->buildRequest([
             'method' => 'GET',
             'url'    => "{$this->client->apiBaseUrl}/v2" . self::URI,
             'params' => $params
-        ]);
+        ]));
 
         $objects = [];
 
@@ -62,10 +62,10 @@ class CustomerV2Service extends BaseService
      */
     public function retrieve(string $id): Customer
     {
-        $apiResource = $this->httpClient->request([
+        $apiResource = $this->httpClient->request($this->buildRequest([
             'method' => 'GET',
             'url'    => "{$this->client->apiBaseUrl}/v2" . self::URI . "/{$id}",
-        ]);
+        ]));
 
         return new Customer($apiResource);
     }
@@ -77,12 +77,29 @@ class CustomerV2Service extends BaseService
      */
     public function update(string $id, array $params): Customer
     {
-        $apiResource = $this->httpClient->request([
+        $apiResource = $this->httpClient->request($this->buildRequest([
             'method' => 'PATCH',
             'url'    => "{$this->client->apiBaseUrl}/v2" . self::URI . "/{$id}",
             'params' => $params
-        ]);
+        ]));
 
         return new Customer($apiResource);
+    }
+
+    /**
+     * @param array<string, mixed> $request
+     * @return array<string, mixed>
+     */
+    private function buildRequest(array $request): array
+    {
+        $token = $this->client->config['customer_bearer_token'] ?? null;
+
+        if (is_string($token) && $token !== '') {
+            $request['headers'] = [
+                'Authorization: Bearer ' . $token,
+            ];
+        }
+
+        return $request;
     }
 }

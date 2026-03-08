@@ -20,7 +20,7 @@ class RequirementService extends BaseService
     {
         $apiResource = $this->httpClient->request([
             'method' => 'GET',
-            'url'    => $this->buildUrl("/child_merchants/{$id}/requirements"),
+            'url'    => $this->buildUrl("/merchants/children/{$id}/requirements"),
         ]);
 
         return new Requirement($apiResource);

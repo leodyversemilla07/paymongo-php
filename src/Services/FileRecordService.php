@@ -13,8 +13,6 @@ use Paymongo\Entities\Listing;
  */
 class FileRecordService extends BaseService
 {
-    private const URI = '/file_records';
-
     /**
      * List file records for a child merchant.
      *
@@ -24,7 +22,7 @@ class FileRecordService extends BaseService
     {
         $apiResource = $this->httpClient->request([
             'method' => 'GET',
-            'url'    => $this->buildUrl("/child_merchants/{$id}/file_records"),
+            'url'    => $this->buildUrl("/merchants/children/{$id}/documents"),
             'params' => $params
         ]);
 
@@ -53,7 +51,7 @@ class FileRecordService extends BaseService
 
         $apiResource = $this->httpClient->request([
             'method' => 'POST',
-            'url'    => $this->buildUrl("/child_merchants/{$id}/file_records"),
+            'url'    => $this->buildUrl("/merchants/children/{$id}/documents"),
             'body'   => $body['body'],
             'headers' => $body['headers'],
             'content_type' => $body['content_type']
@@ -69,7 +67,7 @@ class FileRecordService extends BaseService
     {
         $apiResource = $this->httpClient->request([
             'method' => 'DELETE',
-            'url'    => $this->buildUrl("/child_merchants/{$id}/file_records/{$fileRecordId}"),
+            'url'    => $this->buildUrl("/merchants/children/{$id}/documents/{$fileRecordId}"),
         ]);
 
         return new FileRecord($apiResource);
@@ -84,7 +82,7 @@ class FileRecordService extends BaseService
     {
         $apiResource = $this->httpClient->request([
             'method' => 'GET',
-            'url'    => $this->buildUrl("/consumers/{$id}/file_records"),
+            'url'    => $this->buildUrl("/consumers/{$id}/documents"),
             'params' => $params
         ]);
 
@@ -113,7 +111,7 @@ class FileRecordService extends BaseService
 
         $apiResource = $this->httpClient->request([
             'method' => 'POST',
-            'url'    => $this->buildUrl("/consumers/{$id}/file_records"),
+            'url'    => $this->buildUrl("/consumers/{$id}/documents"),
             'body'   => $body['body'],
             'headers' => $body['headers'],
             'content_type' => $body['content_type']
@@ -129,7 +127,7 @@ class FileRecordService extends BaseService
     {
         $apiResource = $this->httpClient->request([
             'method' => 'DELETE',
-            'url'    => $this->buildUrl("/consumers/{$id}/file_records/{$fileRecordId}"),
+            'url'    => $this->buildUrl("/consumers/{$id}/documents/{$fileRecordId}"),
         ]);
 
         return new FileRecord($apiResource);
