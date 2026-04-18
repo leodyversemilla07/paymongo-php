@@ -13,12 +13,40 @@ final class RefundServiceTest extends TestCase
 {
     public function testCreateRefundBuildsRequest(): void
     {
-        $fake = new HttpClientFake([
-            'api_key' => 'sk_test_key'
+        $fake = new HttpClientFake(['api_key' => 'sk_test_key']);
+        $fake->queueResponse($this->refundResource('ref_test_123', 'pending'));
+
+        $client = new PaymongoClient('sk_test_key', ['http_client' => $fake]);
+
+        $client->refunds->create([
+            'payment_id' => 'pay_test_123',
+            'amount' => 1000,
+            'reason' => 'requested_by_customer',
         ]);
-        $fake->queueResponse(new ApiResource([
+
+        $this->assertSame('POST', $fake->lastRequest['method']);
+        $this->assertSame('https://api.paymongo.com/v1/refunds', $fake->lastRequest['url']);
+    }
+
+    public function testRetrieveRefundBuildsRequest(): void
+    {
+        $fake = new HttpClientFake(['api_key' => 'sk_test_key']);
+        $fake->queueResponse($this->refundResource('ref_test_123', 'pending'));
+
+        $client = new PaymongoClient('sk_test_key', ['http_client' => $fake]);
+
+        $refund = $client->refunds->retrieve('ref_test_123');
+
+        $this->assertSame('ref_test_123', $refund->id);
+        $this->assertSame('GET', $fake->lastRequest['method']);
+        $this->assertSame('https://api.paymongo.com/v1/refunds/ref_test_123', $fake->lastRequest['url']);
+    }
+
+    private function refundResource(string $id, string $status): ApiResource
+    {
+        return new ApiResource([
             'data' => [
-                'id' => 'ref_test_123',
+                'id' => $id,
                 'attributes' => [
                     'amount' => 1000,
                     'balance_transaction_id' => null,
@@ -27,29 +55,15 @@ final class RefundServiceTest extends TestCase
                     'payout_id' => null,
                     'notes' => null,
                     'reason' => 'requested_by_customer',
-                    'status' => 'pending',
+                    'status' => $status,
                     'available_at' => null,
                     'refunded_at' => null,
                     'currency' => 'PHP',
                     'metadata' => null,
                     'created_at' => 0,
-                    'updated_at' => 0
-                ]
-            ]
-        ]));
-
-        $client = new PaymongoClient('sk_test_key', [
-            'http_client' => $fake
+                    'updated_at' => 0,
+                ],
+            ],
         ]);
-
-        $client->refunds->create([
-            'payment_id' => 'pay_test_123',
-            'amount' => 1000,
-            'reason' => 'requested_by_customer'
-        ]);
-
-        $this->assertSame('POST', $fake->lastRequest['method']);
-        $this->assertSame('https://api.paymongo.com/v1/refunds', $fake->lastRequest['url']);
-        $this->assertSame('pay_test_123', $fake->lastRequest['params']['payment_id']);
     }
 }

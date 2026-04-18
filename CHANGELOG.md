@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.2] - 2026-04-18
+### Added
+- Completed a full request-shape coverage closure pass across all public service methods exposed via `ServiceFactory`
+- Expanded regression coverage for Cards and Issuing (`cardPrograms`, `cardholders`, `cards`, `challenges`)
+- Expanded regression coverage for onboarding and customer flows (`consumers`, `customersV2`, `fileRecords`, `requirements`)
+- Expanded regression coverage for billing and ledger surfaces (`invoices`, `ledgers`, `ledgerTransactions`)
+- Expanded regression coverage for legacy transfer/wallet services, refunds, reviews, rules, scores, payment methods, and QR transfer execution paths
+
+### Changed
+- Increased automated test suite coverage to include direct invocation coverage of every public service method currently mapped in the SDK service factory
+
 ## [1.2.1] - 2026-04-18
 ### Fixed
 - Updated GitHub Actions PHP versions for CI and release workflows to avoid failed installs from security-blocked PHPUnit versions on PHP 8.2

@@ -13,29 +13,44 @@ final class RequirementServiceTest extends TestCase
 {
     public function testRetrieveChildMerchantRequirementsBuildsRequest(): void
     {
-        $fake = new HttpClientFake([
-            'api_key' => 'sk_test_key'
-        ]);
-        $fake->queueResponse(new ApiResource([
-            'data' => [
-                'id' => 'req_test_123',
-                'attributes' => [
-                    'requirements' => [],
-                    'livemode' => false,
-                    'status' => 'pending',
-                    'created_at' => 0,
-                    'updated_at' => 0
-                ]
-            ]
-        ]));
+        $fake = new HttpClientFake(['api_key' => 'sk_test_key']);
+        $fake->queueResponse($this->requirementResource('req_test_123'));
 
-        $client = new PaymongoClient('sk_test_key', [
-            'http_client' => $fake
-        ]);
+        $client = new PaymongoClient('sk_test_key', ['http_client' => $fake]);
 
         $client->requirements->retrieveChildMerchant('cm_test_123');
 
         $this->assertSame('GET', $fake->lastRequest['method']);
         $this->assertSame('https://api.paymongo.com/v1/merchants/children/cm_test_123/requirements', $fake->lastRequest['url']);
+    }
+
+    public function testRetrieveConsumerRequirementsBuildsRequest(): void
+    {
+        $fake = new HttpClientFake(['api_key' => 'sk_test_key']);
+        $fake->queueResponse($this->requirementResource('req_test_124'));
+
+        $client = new PaymongoClient('sk_test_key', ['http_client' => $fake]);
+
+        $requirement = $client->requirements->retrieveConsumer('cons_test_123');
+
+        $this->assertSame('req_test_124', $requirement->id);
+        $this->assertSame('GET', $fake->lastRequest['method']);
+        $this->assertSame('https://api.paymongo.com/v1/consumers/cons_test_123/requirements', $fake->lastRequest['url']);
+    }
+
+    private function requirementResource(string $id): ApiResource
+    {
+        return new ApiResource([
+            'data' => [
+                'id' => $id,
+                'attributes' => [
+                    'requirements' => [],
+                    'livemode' => false,
+                    'status' => 'pending',
+                    'created_at' => 0,
+                    'updated_at' => 0,
+                ],
+            ],
+        ]);
     }
 }
