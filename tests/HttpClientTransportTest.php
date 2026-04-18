@@ -158,6 +158,22 @@ final class HttpClientTransportTest extends TestCase
         );
     }
 
+    public function testBuildRequestBodyThrowsWhenParamsCannotBeEncoded(): void
+    {
+        $client = $this->makeClient();
+
+        $this->expectException(BaseException::class);
+        $this->expectExceptionMessage('Failed to encode request body:');
+
+        $client->buildBodyPublic([
+            'method' => 'POST',
+            'url' => 'https://api.paymongo.com/v1/payments',
+            'params' => [
+                'amount' => NAN,
+            ],
+        ]);
+    }
+
     public function testPatchRequestsBuildJsonBody(): void
     {
         $client = $this->makeClient();

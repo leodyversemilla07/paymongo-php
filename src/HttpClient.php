@@ -9,6 +9,7 @@ use Paymongo\Exceptions\InvalidRequestException;
 use Paymongo\Exceptions\ResourceNotFoundException;
 use Paymongo\Exceptions\RouteNotFoundException;
 use Paymongo\Exceptions\BaseException;
+use JsonException;
 
 /**
  * HTTP client for making requests to the PayMongo API.
@@ -73,7 +74,10 @@ class HttpClient
             }
 
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $opts['method']);
-            curl_setopt($ch, CURLOPT_POST, 1);
+
+            if ($opts['method'] === 'POST') {
+                curl_setopt($ch, CURLOPT_POST, 1);
+            }
         }
 
         $body = curl_exec($ch);
@@ -208,7 +212,15 @@ class HttpClient
             ]
         ];
 
-        return json_encode($data);
+        try {
+            return json_encode($data, JSON_THROW_ON_ERROR);
+        } catch (JsonException $e) {
+            throw new BaseException([
+                'errors' => [[
+                    'detail' => 'Failed to encode request body: ' . $e->getMessage(),
+                ]],
+            ]);
+        }
     }
 
     /**
@@ -248,16 +260,17 @@ class HttpClient
             return [];
         }
 
-        $jsonBody = json_decode($body, true);
-        if ($jsonBody === null && json_last_error() !== JSON_ERROR_NONE) {
+        try {
+            $jsonBody = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+        } catch (JsonException $e) {
             throw new BaseException([
                 'errors' => [[
-                    'detail' => 'Invalid JSON response: ' . json_last_error_msg(),
+                    'detail' => 'Invalid JSON response: ' . $e->getMessage(),
                 ]],
             ]);
         }
 
-        return $jsonBody ?? [];
+        return is_array($jsonBody) ? $jsonBody : [];
     }
 
     /**

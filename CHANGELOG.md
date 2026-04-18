@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-04-18
+### Added
+- Added PHPStan static analysis tooling with a dedicated `composer analyse` script and CI enforcement on PHP 8.4
+- Added comprehensive request-shape regression tests for low-coverage services and methods including Installment Plans, Products, Sources, Triggers, Forex rates/quotes, Subscriptions, Customers (legacy), Child Merchants, Links, Payment Intents, Payments, Plans, and Checkout Sessions
+
+### Changed
+- Upgraded transport JSON encoding/decoding to `JSON_THROW_ON_ERROR` semantics and standardized error surfacing through `BaseException`
+- Improved `BaseException` to expose first API error detail through `getMessage()` for better developer ergonomics
+- Bumped SDK version constant to `1.2.0`
+
+### Fixed
+- Tightened cURL method handling to avoid setting `CURLOPT_POST` for non-POST requests
+- Hardened webhook signature verification with strict timestamp validation and configurable replay-tolerance window
+
 ## [1.1.0] - 2026-03-08
 ### Added
 - Payment Intent `attach` support

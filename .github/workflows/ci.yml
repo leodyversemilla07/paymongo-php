@@ -25,3 +25,7 @@ jobs:
 
       - name: Run tests
         run: vendor/bin/phpunit
+
+      - name: Run static analysis
+        if: matrix.php == '8.4'
+        run: vendor/bin/phpstan analyse

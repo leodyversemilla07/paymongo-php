@@ -144,4 +144,81 @@ final class WebhookSignatureTest extends TestCase
             'webhook_secret_key' => $secret
         ]);
     }
+
+    public function testConstructEventRejectsTimestampOutsideDefaultTolerance(): void
+    {
+        $this->expectException(\Paymongo\Exceptions\SignatureVerificationException::class);
+
+        $client = new \Paymongo\PaymongoClient('sk_test_key');
+        $payload = file_get_contents(__DIR__ . '/fixtures/sample_event.json');
+        $secret = 'whsec_test';
+
+        $timestamp = time() - 601;
+        $signature = hash_hmac('sha256', $timestamp . '.' . $payload, $secret);
+        $header = "t={$timestamp},te={$signature},li=";
+
+        $client->webhooks->constructEvent([
+            'payload' => $payload,
+            'signature_header' => $header,
+            'webhook_secret_key' => $secret
+        ]);
+    }
+
+    public function testConstructEventAllowsOldTimestampWhenToleranceDisabled(): void
+    {
+        $client = new \Paymongo\PaymongoClient('sk_test_key');
+        $payload = file_get_contents(__DIR__ . '/fixtures/sample_event.json');
+        $secret = 'whsec_test';
+
+        $timestamp = time() - 3600;
+        $signature = hash_hmac('sha256', $timestamp . '.' . $payload, $secret);
+        $header = "t={$timestamp},te={$signature},li=";
+
+        $event = $client->webhooks->constructEvent([
+            'payload' => $payload,
+            'signature_header' => $header,
+            'webhook_secret_key' => $secret,
+            'signature_tolerance' => null,
+        ]);
+
+        $this->assertSame('evt_test_123', $event->id);
+    }
+
+    public function testConstructEventRejectsInvalidTimestampValue(): void
+    {
+        $this->expectException(\Paymongo\Exceptions\UnexpectedValueException::class);
+
+        $client = new \Paymongo\PaymongoClient('sk_test_key');
+        $payload = file_get_contents(__DIR__ . '/fixtures/sample_event.json');
+        $secret = 'whsec_test';
+
+        $header = 't=invalid,te=abc,li=';
+
+        $client->webhooks->constructEvent([
+            'payload' => $payload,
+            'signature_header' => $header,
+            'webhook_secret_key' => $secret,
+            'signature_tolerance' => null,
+        ]);
+    }
+
+    public function testConstructEventRejectsInvalidToleranceType(): void
+    {
+        $this->expectException(\Paymongo\Exceptions\UnexpectedValueException::class);
+
+        $client = new \Paymongo\PaymongoClient('sk_test_key');
+        $payload = file_get_contents(__DIR__ . '/fixtures/sample_event.json');
+        $secret = 'whsec_test';
+
+        $timestamp = time();
+        $signature = hash_hmac('sha256', $timestamp . '.' . $payload, $secret);
+        $header = "t={$timestamp},te={$signature},li=";
+
+        $client->webhooks->constructEvent([
+            'payload' => $payload,
+            'signature_header' => $header,
+            'webhook_secret_key' => $secret,
+            'signature_tolerance' => '300',
+        ]);
+    }
 }

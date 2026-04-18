@@ -1,0 +1,10 @@
+parameters:
+    level: 0
+    paths:
+        - src
+    excludePaths:
+        - src/PayMongo.php
+    ignoreErrors:
+        -
+            message: '#Unsafe usage of new static\(\)#'
+            path: src/Exceptions/ApiException.php

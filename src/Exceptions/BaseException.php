@@ -23,14 +23,29 @@ class BaseException extends Exception
      */
     public function __construct(?array $data = null)
     {
-        parent::__construct();
-        
         $this->data = $data;
         $this->errors = [];
 
-        if (is_array($this->data) && array_key_exists('errors', $this->data)) {
+        if (is_array($this->data) && array_key_exists('errors', $this->data) && is_array($this->data['errors'])) {
             $this->errors = $this->data['errors'];
         }
+
+        $message = '';
+        $code = 0;
+
+        if (!empty($this->errors) && is_array($this->errors[0])) {
+            $firstError = $this->errors[0];
+
+            if (array_key_exists('detail', $firstError) && is_string($firstError['detail'])) {
+                $message = $firstError['detail'];
+            }
+
+            if (array_key_exists('code', $firstError) && is_numeric($firstError['code'])) {
+                $code = (int) $firstError['code'];
+            }
+        }
+
+        parent::__construct($message, $code);
     }
 
     /**

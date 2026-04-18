@@ -55,6 +55,19 @@ final class HttpClientErrorHandlingTest extends TestCase
             $errors = $e->getError();
             $this->assertNotEmpty($errors);
             $this->assertSame('cURL error 28: timeout', $errors[0]->detail);
+            $this->assertSame('cURL error 28: timeout', $e->getMessage());
         }
+    }
+
+    public function testBaseExceptionUsesFirstErrorDetailAsMessage(): void
+    {
+        $exception = new BaseException([
+            'errors' => [
+                ['detail' => 'Validation failed'],
+                ['detail' => 'Second error'],
+            ],
+        ]);
+
+        $this->assertSame('Validation failed', $exception->getMessage());
     }
 }

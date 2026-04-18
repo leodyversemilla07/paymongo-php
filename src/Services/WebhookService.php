@@ -115,7 +115,7 @@ class WebhookService extends BaseService
     /**
      * Construct an event from a webhook payload and verify its signature.
      *
-     * @param array{payload: string, signature_header: string, webhook_secret_key: string} $opts
+     * @param array{payload: string, signature_header: string, webhook_secret_key: string, signature_tolerance?: int|null} $opts
      * @throws UnexpectedValueException If the signature format is invalid
      * @throws SignatureVerificationException If the signature verification fails
      */
@@ -124,13 +124,29 @@ class WebhookService extends BaseService
         $payload = $opts['payload'];
         $signatureHeader = $opts['signature_header'];
         $webhookSecretKey = $opts['webhook_secret_key'];
+        $signatureTolerance = array_key_exists('signature_tolerance', $opts)
+            ? $opts['signature_tolerance']
+            : 300;
 
         if (!is_string($signatureHeader)) {
             throw new UnexpectedValueException('Signature must be a string.');
         }
 
+        if ($signatureTolerance !== null && (!is_int($signatureTolerance) || $signatureTolerance < 0)) {
+            throw new UnexpectedValueException('Signature tolerance must be a non-negative integer or null.');
+        }
+
         $signatureParts = $this->parseSignatureHeader($signatureHeader);
         $timestamp = $signatureParts['t'];
+
+        if (!ctype_digit($timestamp)) {
+            throw new UnexpectedValueException('The signature timestamp is invalid.');
+        }
+
+        if ($signatureTolerance !== null && abs(time() - (int) $timestamp) > $signatureTolerance) {
+            throw new SignatureVerificationException('The signature timestamp is outside the tolerance window.');
+        }
+
         $comparisonSignature = $signatureParts['li'] !== ''
             ? $signatureParts['li']
             : $signatureParts['te'];
