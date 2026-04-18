@@ -29,7 +29,7 @@ use Paymongo\Services\BaseService;
 class PaymongoClient
 {
     /** SDK version */
-    public const VERSION = '1.2.0';
+    public const VERSION = '1.2.1';
 
     /** @var array<string, mixed> Configuration options */
     public array $config = [];

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.1] - 2026-04-18
+### Fixed
+- Updated GitHub Actions PHP versions for CI and release workflows to avoid failed installs from security-blocked PHPUnit versions on PHP 8.2
+- Release workflow now validates on PHP 8.4, matching the SDK test/tooling baseline for this release train
+
 ## [1.2.0] - 2026-04-18
 ### Added
 - Added PHPStan static analysis tooling with a dedicated `composer analyse` script and CI enforcement on PHP 8.4
